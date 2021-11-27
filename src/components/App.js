@@ -132,7 +132,9 @@ class App extends Component {
       }
 
       this.refreshBalance()
-      this.vestingSchedule()
+      if(account != null){
+        this.vestingSchedule()
+      }
 
       this.setState({account: account, loading: false})
     })
@@ -212,7 +214,7 @@ class App extends Component {
   	  })
   	} else {
   		window.alert('Please click the CONNECT button to link your wallet first.')
-  		this.setState({ loading: true })
+  		this.setState({ loading: false })
   	}
   }
 
@@ -230,7 +232,7 @@ class App extends Component {
   }
 
   async vestingSchedule(event){
-  	let next, stage
+  	let next, stage, complete
 
   	let first = await this.state.kyoVesting.methods.first_schedule(this.state.account).call({ from: this.state.account })
   	let first_payment = await this.state.kyoVesting.methods.first_payment(this.state.account).call({ from: this.state.account })
@@ -307,46 +309,60 @@ class App extends Component {
     if(Date.now() > first && first_payment > 0) {
       next = firstDate.toLocaleString()
       stage = 'first'
+      complete = 0
     } else if (Date.now() > second && second_payment > 0) {
       next = secondDate.toLocaleString()
       stage = 'second'
+      complete = 1
     } else if (Date.now() > third && third_payment > 0) {
       next = thirdDate.toLocaleString()
       stage = 'third'
+      complete = 2
     } else if (Date.now() > fourth && fourth_payment > 0) {
       next = fourthDate.toLocaleString()
       stage = 'fourth'
+      complete = 3
     } else if (Date.now() > fifth && fifth_payment > 0) {
       next = fifthDate.toLocaleString()
       stage = 'fifth'
+      complete = 4
     } else if (Date.now() > sixth && sixth_payment > 0) {
       next = sixthDate.toLocaleString()
       stage = 'sixth'
+      complete = 5
     } else if (Date.now() > seventh && seventh_payment > 0) {
       next = seventhDate.toLocaleString()
       stage = 'seventh'
+      complete = 6
     } else if (Date.now() > eighth && eighth_payment > 0) {
       next = eighthDate.toLocaleString()
       stage = 'eighth'
+      complete = 7
     } else if (Date.now() > ninth && ninth_payment > 0) {
       next = ninthDate.toLocaleString()
       stage = 'ninth'
+      complete = 8
     } else if (Date.now() > tenth && tenth_payment > 0) {
       next = tenthDate.toLocaleString()
       stage = 'tenth'
+      complete = 9
     } else if (Date.now() > eleventh && eleventh_payment > 0) {
       next = eleventhDate.toLocaleString()
       stage = 'eleventh'
+      complete = 10
     } else if (Date.now() > twelfth && twelfth_payment > 0) {
       next = twelfthDate.toLocaleString()
       stage = 'twelfth'
+      complete = 11
     } else {
       next = 'No further vestment possible.'
       stage = ''
+      complete = 12
     }
 
     this.setState({ nextSched: next })
     this.setState({ stage: stage })
+    this.setState({ complete: complete })
   }
 
   constructor(props) {
@@ -360,6 +376,7 @@ class App extends Component {
       loading: false,
       onlyNetwork: false,
       balance: 0,
+      complete: 0,
     }
 
     this.on = this.on.bind(this)
@@ -383,6 +400,7 @@ class App extends Component {
         balance={this.state.balance}
         nextSched={this.state.nextSched}
         stage={this.state.stage}
+        complete={this.state.complete}
       />
     }
 

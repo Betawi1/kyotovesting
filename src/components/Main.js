@@ -25,6 +25,7 @@ class Main extends Component {
       schedule = <Schedule 
         nextSched={this.props.nextSched}
         stage={this.props.stage}
+        complete={this.props.complete}
         account={this.props.account}
       />
     }

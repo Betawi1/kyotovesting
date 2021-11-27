@@ -13,6 +13,8 @@ class Schedule extends Component {
       <div className="card mb-4" >
         <div className="card-body">
           Your {this.props.stage} withdrawal date: {this.props.nextSched}
+          <br></br>
+          Vestments completed: {this.props.complete}/12
         </div>
       </div>
     );
