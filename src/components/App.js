@@ -132,11 +132,10 @@ class App extends Component {
       }
 
       this.refreshBalance()
-      if(account != null){
-        this.vestingSchedule()
-      }
-
       this.setState({account: account, loading: false})
+      if(this.state.account != null){
+        this.vestingSchedule()
+      }      
     })
 
     // update network
@@ -359,6 +358,7 @@ class App extends Component {
       stage = ''
       complete = 12
     }
+
 
     this.setState({ nextSched: next })
     this.setState({ stage: stage })
