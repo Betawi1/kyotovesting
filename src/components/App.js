@@ -106,7 +106,9 @@ class App extends Component {
       this.setState({ kyoCoin })
 
       this.refreshBalance()
-      this.vestingSchedule()
+      if(this.state.account !== undefined){
+        this.vestingSchedule()
+      }
 
       this.setState({
         web3: web3,
