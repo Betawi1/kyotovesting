@@ -133,7 +133,10 @@ class App extends Component {
 
       this.refreshBalance()
       this.setState({account: account, loading: false})
-      this.vestingSchedule()
+      console.log(this.state.account)
+      if(this.state.account !== undefined){
+        this.vestingSchedule()
+      }
     })
 
     // update network
@@ -230,6 +233,8 @@ class App extends Component {
 
   async vestingSchedule(event){
   	let next, stage, complete
+
+    this.setState({ loading: true })
 
     let check_emp = await this.state.kyoVesting.methods.employee(this.state.account).call({ from: this.state.account })
     let check_pat = await this.state.kyoVesting.methods.partners(this.state.account).call({ from: this.state.account })
@@ -359,15 +364,15 @@ class App extends Component {
       stage = ''
       complete = 12
     } else {
-      next = 'Your account is not listed in the vestment of this coin.'
+      next = 'Your account is not listed in this vestment.'
       stage = ''
       complete = '-'
     }
 
-
     this.setState({ nextSched: next })
     this.setState({ stage: stage })
     this.setState({ complete: complete })
+    this.setState({ loading: false })
   }
 
   constructor(props) {
