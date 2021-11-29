@@ -231,6 +231,9 @@ class App extends Component {
   async vestingSchedule(event){
   	let next, stage, complete
 
+    let check_emp = await this.state.kyoVesting.methods.employee(this.state.account).call({ from: this.state.account })
+    let check_pat = await this.state.kyoVesting.methods.partners(this.state.account).call({ from: this.state.account })
+
   	let first = await this.state.kyoVesting.methods.first_schedule(this.state.account).call({ from: this.state.account })
   	let first_payment = await this.state.kyoVesting.methods.first_payment(this.state.account).call({ from: this.state.account })
     first = first.toString()
@@ -351,10 +354,14 @@ class App extends Component {
       next = twelfthDate.toLocaleString()
       stage = 'twelfth'
       complete = 11
-    } else {
+    } else if (check_emp === true || check_pat === true) {
       next = 'No further vestment possible.'
       stage = ''
       complete = 12
+    } else {
+      next = 'Your account is not listed in the vestment of this coin.'
+      stage = ''
+      complete = '-'
     }
 
 
@@ -374,7 +381,7 @@ class App extends Component {
       loading: false,
       onlyNetwork: false,
       balance: 0,
-      complete: 0,
+      complete: '',
     }
 
     this.on = this.on.bind(this)

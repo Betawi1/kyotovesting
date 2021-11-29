@@ -50,17 +50,16 @@ contract KyoVesting is IERC20, Ownable {
 		interval = _interval;
 	}
 
-	function add_partner(address _partner, uint256 _amount) public onlyOwner {
+	function add_partner(address _partner, uint256 _amount, uint256 _startTime) public onlyOwner {
 		require(_partner != address(0));
 		require(partners[_partner] != true, "Partner already added.");
 		require(_amount > 0);
 		require(completed[_partner] != true, "Partner has already completed the full schedule");
 		employee[_partner] = true;
 		partners[_partner] = true;
-		uint256 timenow = block.timestamp;
 
 		// add timelocks to schedules
-		first_schedule[_partner] = timenow.add(interval);
+		first_schedule[_partner] = _startTime.add(interval);
 		second_schedule[_partner] = first_schedule[_partner].add(interval);
 		third_schedule[_partner] = second_schedule[_partner].add(interval);
 		fourth_schedule[_partner] = third_schedule[_partner].add(interval);
@@ -89,17 +88,16 @@ contract KyoVesting is IERC20, Ownable {
 		twelfth_payment[_partner] = payment;
 	}
 
-	function add_employee(address _employee, uint256 _amount) public onlyOwner {
+	function add_employee(address _employee, uint256 _amount, uint256 _startTime) public onlyOwner {
 		require(_employee != address(0));
 		require(employee[_employee] != true, "Employee already exists");
 		require(revoked[_employee] != true, "Revoked employee cannot be added");
 		require(completed[_employee] != true, "Completely vested employee cannot be added");
 		require(_amount > 0);
 		employee[_employee] = true;
-		uint256 timenow = block.timestamp;
 
 		// add timelocks to schedules
-		first_schedule[_employee] = timenow.add(interval);
+		first_schedule[_employee] = _startTime.add(interval);
 		second_schedule[_employee] = first_schedule[_employee].add(interval);
 		third_schedule[_employee] = second_schedule[_employee].add(interval);
 		fourth_schedule[_employee] = third_schedule[_employee].add(interval);
