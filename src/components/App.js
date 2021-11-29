@@ -133,9 +133,7 @@ class App extends Component {
 
       this.refreshBalance()
       this.setState({account: account, loading: false})
-      if(this.state.account != null){
-        this.vestingSchedule()
-      }      
+      this.vestingSchedule()
     })
 
     // update network
