@@ -135,7 +135,6 @@ class App extends Component {
 
       this.refreshBalance()
       this.setState({account: account, loading: false})
-      console.log(this.state.account)
       if(this.state.account !== undefined){
         this.vestingSchedule()
       }
