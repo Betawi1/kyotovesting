@@ -14,7 +14,7 @@ const KYOC_ADDRESS = "0xaEBC9EbDd1CD6808b632aA675eA571EEddD0C5b4"
 
 //KyotoVesting
 const KYO_ABI = KyoVesting.abi
-const KYO_ADDRESS = "0xFE9aa292a023bEe7d1eB808C827C021A67Ef6a06"
+const KYO_ADDRESS = "0xc9A766057e6Ce4Aed43AF7e7142798Ef72604455"
 
 class App extends Component {
   async componentWillMount() {
@@ -238,7 +238,7 @@ class App extends Component {
     this.setState({ loading: true })
 
     let check_emp = await this.state.kyoVesting.methods.employee(this.state.account).call({ from: this.state.account })
-    let check_pat = await this.state.kyoVesting.methods.partners(this.state.account).call({ from: this.state.account })
+    console.log(check_emp)
 
   	let first = await this.state.kyoVesting.methods.first_schedule(this.state.account).call({ from: this.state.account })
   	let first_payment = await this.state.kyoVesting.methods.first_payment(this.state.account).call({ from: this.state.account })
@@ -360,7 +360,7 @@ class App extends Component {
       next = twelfthDate.toLocaleString()
       stage = 'twelfth'
       complete = 11
-    } else if (check_emp === true || check_pat === true) {
+    } else if (check_emp === 0) {
       next = 'No further vestment possible.'
       stage = ''
       complete = 12
@@ -369,7 +369,11 @@ class App extends Component {
       stage = ''
       complete = '-'
     }
+    
+    let remaining = check_emp.toString(10)
+    remaining = this.state.web3.utils.fromWei(remaining, 'ether')
 
+    this.setState({ remaining: remaining })
     this.setState({ nextSched: next })
     this.setState({ stage: stage })
     this.setState({ complete: complete })
@@ -388,6 +392,7 @@ class App extends Component {
       onlyNetwork: false,
       balance: 0,
       complete: '',
+      remaining: 0,
     }
 
     this.on = this.on.bind(this)
@@ -412,6 +417,7 @@ class App extends Component {
         nextSched={this.state.nextSched}
         stage={this.state.stage}
         complete={this.state.complete}
+        remaining={this.state.remaining}
       />
     }
 

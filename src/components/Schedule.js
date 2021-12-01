@@ -15,6 +15,8 @@ class Schedule extends Component {
           Your {this.props.stage} withdrawal date: {this.props.nextSched}
           <br></br>
           Vestments completed: {this.props.complete}/12
+          <br></br>
+          Vestment account balance: {this.props.remaining} KYO
         </div>
       </div>
     );

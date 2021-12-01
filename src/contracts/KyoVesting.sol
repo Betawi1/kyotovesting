@@ -10,7 +10,7 @@ contract KyoVesting is IERC20, Ownable {
 
 	uint256 public interval;
 
-	mapping (address => bool) public employee;
+	mapping (address => uint256) public employee;
 	mapping (address => bool) public revoked;
 	mapping (address => bool) public partners;
 	mapping (address => bool) public completed;
@@ -52,10 +52,11 @@ contract KyoVesting is IERC20, Ownable {
 
 	function add_partner(address _partner, uint256 _amount, uint256 _startTime) public onlyOwner {
 		require(_partner != address(0));
+		require(employee[_partner] < 1);
 		require(partners[_partner] != true, "Partner already added.");
 		require(_amount > 0);
-		require(completed[_partner] != true, "Partner has already completed the full schedule");
-		employee[_partner] = true;
+		require(completed[_partner] != true, "Partner has already completed the full schedule.");
+		employee[_partner] = _amount;
 		partners[_partner] = true;
 
 		// add timelocks to schedules
@@ -90,11 +91,11 @@ contract KyoVesting is IERC20, Ownable {
 
 	function add_employee(address _employee, uint256 _amount, uint256 _startTime) public onlyOwner {
 		require(_employee != address(0));
-		require(employee[_employee] != true, "Employee already exists");
-		require(revoked[_employee] != true, "Revoked employee cannot be added");
-		require(completed[_employee] != true, "Completely vested employee cannot be added");
+		require(employee[_employee] < 1, "Employee already exists.");
+		require(revoked[_employee] != true, "Revoked employee cannot be added.");
+		require(completed[_employee] != true, "Completely vested employee cannot be added.");
 		require(_amount > 0);
-		employee[_employee] = true;
+		employee[_employee] = _amount;
 
 		// add timelocks to schedules
 		first_schedule[_employee] = _startTime.add(interval);
@@ -129,10 +130,10 @@ contract KyoVesting is IERC20, Ownable {
 	function revoke_employee(address _employee) public onlyOwner {
 		require(_employee != address(0));
 		require(partners[_employee] != true, "Partners cannot be revoked");
-		require(employee[_employee] == true, "Only active employee can be revoked");
+		require(employee[_employee] > 0, "Only active employee can be revoked");
 		require(revoked[_employee] != true, "Employee has already been revoked");
 
-		employee[_employee] = false;
+		employee[_employee] = 0;
 		revoked[_employee] = true;
 
 		first_payment[_employee] = 0;
@@ -150,59 +151,72 @@ contract KyoVesting is IERC20, Ownable {
 	}
 
 	function withdraw() public returns (bool) {
-		require(employee[_msgSender()] == true, "You must be an active employee/partner to withdraw");
+		require(employee[_msgSender()] > 0, "You must be an active employee/partner to withdraw");
 		require(revoked[_msgSender()] != true, "Your membership has been revoked");
 		
 		if (block.timestamp > first_schedule[_msgSender()] && first_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), first_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), first_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(first_payment[_msgSender()]);
 			first_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > second_schedule[_msgSender()] && second_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), second_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), second_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(second_payment[_msgSender()]);
 			second_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > third_schedule[_msgSender()] && third_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), third_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), third_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(third_payment[_msgSender()]);
 			third_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > fourth_schedule[_msgSender()] && fourth_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), fourth_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), fourth_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(fourth_payment[_msgSender()]);
 			fourth_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > fifth_schedule[_msgSender()] && fifth_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), fifth_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), fifth_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(fifth_payment[_msgSender()]);
 			fifth_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > sixth_schedule[_msgSender()] && sixth_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), sixth_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), sixth_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(sixth_payment[_msgSender()]);
 			sixth_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > seventh_schedule[_msgSender()] && seventh_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), seventh_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), seventh_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(seventh_payment[_msgSender()]);
 			seventh_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > eighth_schedule[_msgSender()] && eighth_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), eighth_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), eighth_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(eighth_payment[_msgSender()]);
 			eighth_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > ninth_schedule[_msgSender()] && ninth_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), ninth_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), ninth_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(ninth_payment[_msgSender()]);
 			ninth_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > tenth_schedule[_msgSender()] && tenth_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), tenth_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), tenth_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(tenth_payment[_msgSender()]);
 			tenth_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > eleventh_schedule[_msgSender()] && eleventh_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), eleventh_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), eleventh_payment[_msgSender()]));
+			employee[_msgSender()] = employee[_msgSender()].sub(eleventh_payment[_msgSender()]);
 			eleventh_payment[_msgSender()] = 0;
 			return true;
 		} else if (block.timestamp > twelfth_schedule[_msgSender()] && twelfth_payment[_msgSender()] > 0) {
-			require(kyo.transfer(_msgSender(), twelfth_payment[_msgSender()]), "Transfer failed.");
+			require(kyo.transfer(_msgSender(), twelfth_payment[_msgSender()]));
+			employee[_msgSender()] = 0;
 			twelfth_payment[_msgSender()] = 0;
+			completed[_msgSender()] = true;
 			return true;
 		} else {
-			require(block.timestamp < 1, "The next schedule is not due yet.");
+			require(block.timestamp < 1, "The next schedule is not due yet or ended.");
 		}
 		return false;
 	}

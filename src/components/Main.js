@@ -26,6 +26,7 @@ class Main extends Component {
         nextSched={this.props.nextSched}
         stage={this.props.stage}
         complete={this.props.complete}
+        remaining={this.props.remaining}
         account={this.props.account}
       />
     }
