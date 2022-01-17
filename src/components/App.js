@@ -14,7 +14,7 @@ const KYOC_ADDRESS = "0xaEBC9EbDd1CD6808b632aA675eA571EEddD0C5b4"
 
 //KyotoVesting
 const KYO_ABI = KyoVesting.abi
-const KYO_ADDRESS = "0xc9A766057e6Ce4Aed43AF7e7142798Ef72604455"
+const KYO_ADDRESS = "0x1f2Ed3A82778aC18738ba48f8a7e10b7d0702d55"
 
 class App extends Component {
   async componentWillMount() {
@@ -76,7 +76,7 @@ class App extends Component {
     //restore provider session
     await this.state.web3Modal.clearCachedProvider()
     let provider, account, network, web3
-    
+
     try {
       this.setState({loading: true, provider: null})
       //activate windows with providers
@@ -98,7 +98,7 @@ class App extends Component {
 
       this.setState({ account: account, network: network.network })
 
-      
+
       let kyoVesting = this.state.web3.eth.Contract(KYO_ABI, KYO_ADDRESS)
       this.setState({ kyoVesting })
 
@@ -177,7 +177,7 @@ class App extends Component {
           this.setState({network: null})
         }
       } else if (this.state.provider!==null && this.state.provider.isMetaMask){
-        await this.state.provider.close 
+        await this.state.provider.close
       }
 
       this.setState({provider: null})
@@ -369,7 +369,7 @@ class App extends Component {
       stage = ''
       complete = '-'
     }
-    
+
     let remaining = check_emp.toString(10)
     remaining = this.state.web3.utils.fromWei(remaining, 'ether')
 
@@ -425,10 +425,10 @@ class App extends Component {
       <div>
         <Navbar
           on={this.on}
-          off={this.off} 
+          off={this.off}
           account={this.state.account}
           balance={this.state.balance}
-          loading={this.state.loading} 
+          loading={this.state.loading}
         />
         <div className="container-fluid mt-5">
           <div className="row">
